@@ -68,7 +68,7 @@ class TestBulkDownload(DirectoriesMixin, SampleDirMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "application/zip")
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zipf:
+        with zipfile.ZipFile(io.BytesIO(response.getvalue())) as zipf:
             self.assertEqual(len(zipf.filelist), 2)
             self.assertIn("2021-01-01 document A.pdf", zipf.namelist())
             self.assertIn("2020-03-21 document B.jpg", zipf.namelist())
@@ -89,7 +89,7 @@ class TestBulkDownload(DirectoriesMixin, SampleDirMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "application/zip")
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zipf:
+        with zipfile.ZipFile(io.BytesIO(response.getvalue())) as zipf:
             self.assertEqual(len(zipf.filelist), 2)
             self.assertIn("2021-01-01 document A.pdf", zipf.namelist())
             self.assertIn("2020-03-21 document B.pdf", zipf.namelist())
@@ -110,7 +110,7 @@ class TestBulkDownload(DirectoriesMixin, SampleDirMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "application/zip")
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zipf:
+        with zipfile.ZipFile(io.BytesIO(response.getvalue())) as zipf:
             self.assertEqual(len(zipf.filelist), 3)
             self.assertIn("originals/2021-01-01 document A.pdf", zipf.namelist())
             self.assertIn("archive/2020-03-21 document B.pdf", zipf.namelist())
@@ -144,7 +144,7 @@ class TestBulkDownload(DirectoriesMixin, SampleDirMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "application/zip")
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zipf:
+        with zipfile.ZipFile(io.BytesIO(response.getvalue())) as zipf:
             self.assertEqual(len(zipf.filelist), 2)
 
             self.assertIn("2021-01-01 document A.pdf", zipf.namelist())
@@ -203,7 +203,7 @@ class TestBulkDownload(DirectoriesMixin, SampleDirMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "application/zip")
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zipf:
+        with zipfile.ZipFile(io.BytesIO(response.getvalue())) as zipf:
             self.assertEqual(len(zipf.filelist), 2)
             self.assertIn("a space name/Title 2 - Doc 3.jpg", zipf.namelist())
             self.assertIn("test/This is Doc 2.pdf", zipf.namelist())
@@ -249,7 +249,7 @@ class TestBulkDownload(DirectoriesMixin, SampleDirMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "application/zip")
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zipf:
+        with zipfile.ZipFile(io.BytesIO(response.getvalue())) as zipf:
             self.assertEqual(len(zipf.filelist), 2)
             self.assertIn("somewhere/This is Doc 2.pdf", zipf.namelist())
             self.assertIn("somewhere/Title 2 - Doc 3.pdf", zipf.namelist())
@@ -298,7 +298,7 @@ class TestBulkDownload(DirectoriesMixin, SampleDirMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response["Content-Type"], "application/zip")
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zipf:
+        with zipfile.ZipFile(io.BytesIO(response.getvalue())) as zipf:
             self.assertEqual(len(zipf.filelist), 3)
             self.assertIn("originals/bill/This is Doc 2.pdf", zipf.namelist())
             self.assertIn("archive/statement/Title 2 - Doc 3.pdf", zipf.namelist())
