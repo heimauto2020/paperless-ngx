@@ -2036,7 +2036,10 @@ class BulkDownloadView(GenericAPIView):
             for document in documents:
                 strategy.add_document(document)
 
-        return FileResponse(zip_file.open("rb"), as_attachment=True)
+        response = FileResponse(zip_file.open("rb"), as_attachment=True)
+        response["Content-Length"] = zip_file.stat().st_size
+
+        return response
 
 
 @extend_schema_view(**generate_object_with_permissions_schema(StoragePathSerializer))
