@@ -3,8 +3,22 @@
 
 cd ${PAPERLESS_SRC_DIR}
 
+# 1) Figure out the address we'll use:
+if [[ -n "${PAPERLESS_BIND_ADDR:-}" && "${PAPERLESS_BIND_ADDR}" == \[*\] ]]; then
+    # PAPERLESS_BIND_ADDR is set and wrapped in [...]
+    echo "Warning: stripping surrounding brackets from PAPERLESS_BIND_ADDR='${PAPERLESS_BIND_ADDR}'" >&2
+    addr="${PAPERLESS_BIND_ADDR#[}"   # remove leading “[”
+    addr="${addr%]}"                  # remove trailing “]”
+elif [[ -n "${PAPERLESS_BIND_ADDR:-}" ]]; then
+    # PAPERLESS_BIND_ADDR is set but not bracketed
+    addr="$PAPERLESS_BIND_ADDR"
+else
+    # neither PAPERLESS_BIND_ADDR nor GRANIAN_HOST was set → default
+    addr="::"
+fi
+
 # Translate between things, preferring GRANIAN_
-export GRANIAN_HOST=${GRANIAN_HOST:-${PAPERLESS_BIND_ADDR:-"::"}}
+export GRANIAN_HOST="${GRANIAN_HOST:-$addr}"
 export GRANIAN_PORT=${GRANIAN_PORT:-${PAPERLESS_PORT:-8000}}
 export GRANIAN_WORKERS=${GRANIAN_WORKERS:-${PAPERLESS_WEBSERVER_WORKERS:-1}}
 
