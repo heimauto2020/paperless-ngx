@@ -12,6 +12,9 @@ concurrency:
 jobs:
   stale:
     name: 'Stale'
+    permissions:
+      issues: write
+      pull-requests: write
     if: github.repository_owner == 'paperless-ngx'
     runs-on: ubuntu-24.04
     steps:
@@ -27,6 +30,10 @@ jobs:
 
   lock-threads:
     name: 'Lock Old Threads'
+    permissions:
+      issues: write
+      pull-requests: write
+      discussions: write
     if: github.repository_owner == 'paperless-ngx'
     runs-on: ubuntu-24.04
     steps:
@@ -47,6 +54,8 @@ jobs:
 
   close-answered-discussions:
     name: 'Close Answered Discussions'
+    permissions:
+      discussions: write
     if: github.repository_owner == 'paperless-ngx'
     runs-on: ubuntu-24.04
     steps:

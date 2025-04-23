@@ -6,6 +6,9 @@ on:
   push:
     paths: ['src/locale/**', 'src-ui/messages.xlf', 'src-ui/src/locale/**']
     branches: [dev]
+permissions:
+  contents: write
+  pull-requests: write
 jobs:
   synchronize-with-crowdin:
     name: Crowdin Sync
@@ -14,8 +17,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: crowdin action
-        uses: crowdin/github-action@v2
+        uses: crowdin/github-action@v2.7.0
         with:
           upload_translations: false
           download_translations: true

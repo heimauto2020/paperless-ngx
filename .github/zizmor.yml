@@ -1,0 +1,8 @@
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        actions/*: ref-pin
+        crowdin/github-action: ref-pin
+        astral-sh/setup-uv: ref-pin
+        pnpm/action-setup: ref-pin
