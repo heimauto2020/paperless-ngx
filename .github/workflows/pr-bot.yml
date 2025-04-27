@@ -2,8 +2,16 @@ name: PR Bot
 on:
   pull_request:
     types: [opened]
+    branches:
+      - main
+      - dev
+      - beta
   pull_request_target:
     types: [opened]
+    branches:
+      - main
+      - dev
+      - beta
 permissions:
   contents: read
   pull-requests: write

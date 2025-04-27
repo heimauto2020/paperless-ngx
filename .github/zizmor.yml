@@ -1,8 +1,19 @@
+# https://woodruffw.github.io/zizmor/
 rules:
+  dangerous-triggers:
+    ignore:
+      # See https://woodruffw.github.io/zizmor/audits/#remediation_1
+      # we filter to the target branches to limit external users running their own code
+      - pr-bot.yml:2:1
   unpinned-uses:
     config:
       policies:
+        # We trust GitHub not to have a security incident
         actions/*: ref-pin
+        github/codeql-action/*: ref-pin
         crowdin/github-action: ref-pin
         astral-sh/setup-uv: ref-pin
         pnpm/action-setup: ref-pin
+        dessant/lock-threads: ref-pin
+        Gascon1/pr-size-labeler: ref-pin
+        stumpylog/image-cleaner-action/*: ref-pin
