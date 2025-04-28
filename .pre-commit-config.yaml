@@ -51,7 +51,11 @@ repos:
   - repo: https://github.com/woodruffw/zizmor-pre-commit
     rev: v1.6.0
     hooks:
-    - id: zizmor
+      - id: zizmor
+        args:
+          - "--no-progress"
+          - "--quiet"
+          - "--min-severity=low"
   # Python hooks
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.9

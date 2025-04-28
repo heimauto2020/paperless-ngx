@@ -5,15 +5,38 @@ rules:
       # See https://woodruffw.github.io/zizmor/audits/#remediation_1
       # we filter to the target branches to limit external users running their own code
       - pr-bot.yml:2:1
+      # This workflow is manually disabled anyway
+      - project-actions.yml:2:1
+  # See https://woodruffw.github.io/zizmor/audits/#cache-poisoning
+  cache-poisoning:
+    ignore:
+      # We don't publish a release or GitHub page from pull requests, only internal branches
+      # So I think this is safe
+      - ci.yml:2:1
+  # See https://woodruffw.github.io/zizmor/audits/#template-injection
+  template-injection:
+    ignore:
+      # This location only checks the value of github.ref_name, and branch names can't contain
+      # executable code via injection
+      - ci.yml:307:9
+      # Much the same here, the github.ref_name seems like it should be safe from injection
+      - ci.yml:72:9
   unpinned-uses:
     config:
       policies:
         # We trust GitHub not to have a security incident
         actions/*: ref-pin
         github/codeql-action/*: ref-pin
+        # Going to trust Docker as well
+        docker/*: ref-pin
+        # And Codecov
+        codecov/*: ref-pin
+        release-drafter/release-drafter/*: ref-pin
+        shogo82148/actions-upload-release-asset/*: ref-pin
         crowdin/github-action: ref-pin
         astral-sh/setup-uv: ref-pin
         pnpm/action-setup: ref-pin
         dessant/lock-threads: ref-pin
         Gascon1/pr-size-labeler: ref-pin
+        pre-commit/action: ref-pin
         stumpylog/image-cleaner-action/*: ref-pin
