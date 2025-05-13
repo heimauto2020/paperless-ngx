@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: paperless-ngx\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-19 15:13-0700\n"
-"PO-Revision-Date: 2025-04-19 22:14\n"
+"POT-Creation-Date: 2025-05-11 19:44+0000\n"
+"PO-Revision-Date: 2025-05-11 20:05\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -136,92 +136,92 @@ msgstr "sildid"
 
 #: documents/models.py:118 documents/models.py:166
 msgid "document type"
-msgstr ""
+msgstr "dokumendi liik"
 
 #: documents/models.py:119
 msgid "document types"
-msgstr ""
+msgstr "dokumendi liigid"
 
 #: documents/models.py:124
 msgid "path"
-msgstr ""
+msgstr "tee"
 
 #: documents/models.py:128 documents/models.py:155
 msgid "storage path"
-msgstr ""
+msgstr "salvestustee"
 
 #: documents/models.py:129
 msgid "storage paths"
-msgstr ""
+msgstr "salvestusteed"
 
 #: documents/models.py:136
 msgid "Unencrypted"
-msgstr ""
+msgstr "Krüpteerimata"
 
 #: documents/models.py:137
 msgid "Encrypted with GNU Privacy Guard"
-msgstr ""
+msgstr "GNU Privacy Guard krüpteering"
 
 #: documents/models.py:158
 msgid "title"
-msgstr ""
+msgstr "pealkiri"
 
 #: documents/models.py:170 documents/models.py:624
 msgid "content"
-msgstr ""
+msgstr "sisu"
 
 #: documents/models.py:173
 msgid "The raw, text-only data of the document. This field is primarily used for searching."
-msgstr ""
+msgstr "Dokumendi töötlemata tekstandmed. Seda välja kasutatakse peamiselt otsinguks."
 
 #: documents/models.py:178
 msgid "mime type"
-msgstr ""
+msgstr "MIME liik"
 
 #: documents/models.py:188
 msgid "checksum"
-msgstr ""
+msgstr "kontrollkood"
 
 #: documents/models.py:192
 msgid "The checksum of the original document."
-msgstr ""
+msgstr "Originaal dokumendi kontrollkood."
 
 #: documents/models.py:196
 msgid "archive checksum"
-msgstr ""
+msgstr "arhiivi kontrollkood"
 
 #: documents/models.py:201
 msgid "The checksum of the archived document."
-msgstr ""
+msgstr "Arhiveeritud dokumendi kontrollkood."
 
 #: documents/models.py:205
 msgid "page count"
-msgstr ""
+msgstr "lehekülgede arv"
 
 #: documents/models.py:212
 msgid "The number of pages of the document."
-msgstr ""
+msgstr "Dokumendi lehekülgede arv."
 
 #: documents/models.py:216 documents/models.py:630 documents/models.py:668
 #: documents/models.py:739 documents/models.py:797
 msgid "created"
-msgstr ""
+msgstr "loodud"
 
 #: documents/models.py:219
 msgid "modified"
-msgstr ""
+msgstr "muudetud"
 
 #: documents/models.py:226
 msgid "storage type"
-msgstr ""
+msgstr "salvestus liik"
 
 #: documents/models.py:234
 msgid "added"
-msgstr ""
+msgstr "lisatud"
 
 #: documents/models.py:241
 msgid "filename"
-msgstr ""
+msgstr "failinimi"
 
 #: documents/models.py:247
 msgid "Current filename in storage"
@@ -294,7 +294,7 @@ msgstr ""
 
 #: documents/models.py:389
 msgid "Document Type"
-msgstr ""
+msgstr "Dokumendi Liik"
 
 #: documents/models.py:390
 msgid "Storage Path"
@@ -1407,8 +1407,23 @@ msgstr ""
 msgid "As a final step, please complete the following form:"
 msgstr ""
 
+#: documents/validators.py:24
+#, python-brace-format
+msgid "Unable to parse URI {value}, missing scheme"
+msgstr ""
+
+#: documents/validators.py:29
+#, python-brace-format
+msgid "Unable to parse URI {value}, missing net location or path"
+msgstr ""
+
 #: documents/validators.py:36
-msgid ", "
+msgid "URI scheme '{parts.scheme}' is not allowed. Allowed schemes: {', '.join(allowed_schemes)}"
+msgstr ""
+
+#: documents/validators.py:45
+#, python-brace-format
+msgid "Unable to parse URI {value}"
 msgstr ""
 
 #: paperless/apps.py:11
@@ -1547,151 +1562,195 @@ msgstr ""
 msgid "Adds additional user arguments for OCRMyPDF"
 msgstr ""
 
-#: paperless/models.py:171
+#: paperless/models.py:175
 msgid "Application title"
 msgstr ""
 
-#: paperless/models.py:178
+#: paperless/models.py:182
 msgid "Application logo"
 msgstr ""
 
-#: paperless/models.py:188
+#: paperless/models.py:197
+msgid "Enables barcode scanning"
+msgstr ""
+
+#: paperless/models.py:203
+msgid "Enables barcode TIFF support"
+msgstr ""
+
+#: paperless/models.py:209
+msgid "Sets the barcode string"
+msgstr ""
+
+#: paperless/models.py:217
+msgid "Retains split pages"
+msgstr ""
+
+#: paperless/models.py:223
+msgid "Enables ASN barcode"
+msgstr ""
+
+#: paperless/models.py:229
+msgid "Sets the ASN barcode prefix"
+msgstr ""
+
+#: paperless/models.py:237
+msgid "Sets the barcode upscale factor"
+msgstr ""
+
+#: paperless/models.py:244
+msgid "Sets the barcode DPI"
+msgstr ""
+
+#: paperless/models.py:251
+msgid "Sets the maximum pages for barcode"
+msgstr ""
+
+#: paperless/models.py:258
+msgid "Enables tag barcode"
+msgstr ""
+
+#: paperless/models.py:264
+msgid "Sets the tag barcode mapping"
+msgstr ""
+
+#: paperless/models.py:269
 msgid "paperless application settings"
 msgstr ""
 
-#: paperless/settings.py:726
+#: paperless/settings.py:732
 msgid "English (US)"
 msgstr ""
 
-#: paperless/settings.py:727
+#: paperless/settings.py:733
 msgid "Arabic"
 msgstr ""
 
-#: paperless/settings.py:728
+#: paperless/settings.py:734
 msgid "Afrikaans"
 msgstr ""
 
-#: paperless/settings.py:729
+#: paperless/settings.py:735
 msgid "Belarusian"
 msgstr ""
 
-#: paperless/settings.py:730
+#: paperless/settings.py:736
 msgid "Bulgarian"
 msgstr ""
 
-#: paperless/settings.py:731
+#: paperless/settings.py:737
 msgid "Catalan"
 msgstr ""
 
-#: paperless/settings.py:732
+#: paperless/settings.py:738
 msgid "Czech"
 msgstr ""
 
-#: paperless/settings.py:733
+#: paperless/settings.py:739
 msgid "Danish"
 msgstr ""
 
-#: paperless/settings.py:734
+#: paperless/settings.py:740
 msgid "German"
 msgstr ""
 
-#: paperless/settings.py:735
+#: paperless/settings.py:741
 msgid "Greek"
 msgstr ""
 
-#: paperless/settings.py:736
+#: paperless/settings.py:742
 msgid "English (GB)"
 msgstr ""
 
-#: paperless/settings.py:737
+#: paperless/settings.py:743
 msgid "Spanish"
 msgstr ""
 
-#: paperless/settings.py:738
+#: paperless/settings.py:744
 msgid "Finnish"
 msgstr ""
 
-#: paperless/settings.py:739
+#: paperless/settings.py:745
 msgid "French"
 msgstr ""
 
-#: paperless/settings.py:740
+#: paperless/settings.py:746
 msgid "Hungarian"
 msgstr ""
 
-#: paperless/settings.py:741
+#: paperless/settings.py:747
 msgid "Italian"
 msgstr ""
 
-#: paperless/settings.py:742
+#: paperless/settings.py:748
 msgid "Japanese"
 msgstr ""
 
-#: paperless/settings.py:743
+#: paperless/settings.py:749
 msgid "Korean"
 msgstr ""
 
-#: paperless/settings.py:744
+#: paperless/settings.py:750
 msgid "Luxembourgish"
 msgstr ""
 
-#: paperless/settings.py:745
+#: paperless/settings.py:751
 msgid "Norwegian"
 msgstr ""
 
-#: paperless/settings.py:746
+#: paperless/settings.py:752
 msgid "Dutch"
 msgstr ""
 
-#: paperless/settings.py:747
+#: paperless/settings.py:753
 msgid "Polish"
 msgstr ""
 
-#: paperless/settings.py:748
+#: paperless/settings.py:754
 msgid "Portuguese (Brazil)"
 msgstr ""
 
-#: paperless/settings.py:749
+#: paperless/settings.py:755
 msgid "Portuguese"
 msgstr ""
 
-#: paperless/settings.py:750
+#: paperless/settings.py:756
 msgid "Romanian"
 msgstr ""
 
-#: paperless/settings.py:751
+#: paperless/settings.py:757
 msgid "Russian"
 msgstr ""
 
-#: paperless/settings.py:752
+#: paperless/settings.py:758
 msgid "Slovak"
 msgstr ""
 
-#: paperless/settings.py:753
+#: paperless/settings.py:759
 msgid "Slovenian"
 msgstr ""
 
-#: paperless/settings.py:754
+#: paperless/settings.py:760
 msgid "Serbian"
 msgstr ""
 
-#: paperless/settings.py:755
+#: paperless/settings.py:761
 msgid "Swedish"
 msgstr ""
 
-#: paperless/settings.py:756
+#: paperless/settings.py:762
 msgid "Turkish"
 msgstr ""
 
-#: paperless/settings.py:757
+#: paperless/settings.py:763
 msgid "Ukrainian"
 msgstr ""
 
-#: paperless/settings.py:758
+#: paperless/settings.py:764
 msgid "Chinese Simplified"
 msgstr ""
 
-#: paperless/settings.py:759
+#: paperless/settings.py:765
 msgid "Chinese Traditional"
 msgstr ""
 
