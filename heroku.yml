@@ -1,0 +1,75 @@
+build:
+  docker:
+    web: Dockerfile
+run:
+  web: gunicorn paperless.wsgi:application --bind 0.0.0.0:$PORT
+  broker: redis-server --port 6379
+  db: mysqld --datadir=/var/lib/mysql
+
+config:
+  PAPERLESS_REDIS: redis://broker:6379
+  PAPERLESS_DBENGINE: mariadb
+  PAPERLESS_DBHOST: db
+  PAPERLESS_DBUSER: paperless
+  PAPERLESS_DBPASS: paperless
+  PAPERLESS_DBPORT: 3306
+  PAPERLESS_TIKA_ENABLED: 1
+  PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+  PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+
+formation:
+  web:
+    quantity: 1
+    size: free
+  broker:
+    quantity: 1
+    size: free
+  db:
+    quantity: 1
+    size: free
+  gotenberg:
+    quantity: 1
+    size: free
+  tika:
+    quantity: 1
+    size: free
+
+addons:
+  - heroku-redis:hobby-dev
+  - jawsdb:kitefin
+
+env:
+  MARIADB_HOST: db
+  MARIADB_DATABASE: paperless
+  MARIADB_USER: paperless
+  MARIADB_PASSWORD: paperless
+  MARIADB_ROOT_PASSWORD: paperless
+
+scripts:
+  postdeploy: ./manage.py migrate
+
+docker:
+  web:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    ports:
+      - "8000"
+  broker:
+    image: docker.io/library/redis:8
+    ports:
+      - "6379"
+  db:
+    image: docker.io/library/mariadb:11
+    ports:
+      - "3306"
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.20
+    ports:
+      - "3000"
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+  tika:
+    image: docker.io/apache/tika:latest
+    ports:
+      - "9998"
