@@ -1,25 +1,98 @@
+# Deploy Paperless‑ngx (plus Redis, MariaDB, Tika & Gotenberg) to Heroku
+# -------------------------------------------------------------------
+# • Requires an existing Dockerfile in the repo root that uses the official
+#   Paperless‑ngx image, e.g.:
+#     FROM ghcr.io/paperless-ngx/paperless-ngx:latest
+# • Make sure to set the app’s stack to `container`:  `heroku stack:set container`
+# • After the first deploy run `heroku run python manage.py createsuperuser`
+#
+# If you prefer to use Heroku’s managed services for Redis and MariaDB instead
+# of running those images yourself, just keep the `setup:` block below and do
+# **not** scale the `broker` or `db` dynos.
+# -------------------------------------------------------------------
+
+setup:
+  addons:
+    # Free Redis instance for the message broker
+    - plan: heroku-redis:hobby-dev
+      as: REDIS
+    # Free MySQL/MariaDB‑compatible database
+    - plan: jawsdb:kitefin
+      as: DATABASE
+
 build:
   docker:
+    # Uses the Dockerfile in the project root (Paperless‑ngx image)
     web: Dockerfile
-run:
-  web: gunicorn paperless.wsgi:application --bind 0.0.0.0:$PORT
-  broker: redis-server --port 6379
-  db: mysqld --datadir=/var/lib/mysql
 
+run:
+  # ──────────────────────────────────────────────────────────────
+  # Main Paperless web dyno (exposed to the Internet)
+  web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
+
+  # Celery worker for background tasks (re‑uses the same image)
+  worker:
+    command:
+      - celery
+      - -A
+      - paperless
+      - worker
+      - -l
+      - info
+    image: web
+
+  # ──────────────────────────────────────────────────────────────
+  # Supporting containers (each its own dyno/process type)
+  broker:
+    image: docker.io/library/redis:8
+    command: redis-server --port 6379
+
+  db:
+    image: docker.io/library/mariadb:11
+    command:
+      - mysqld
+      - --datadir=/var/lib/mysql
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.20
+    command:
+      - gotenberg
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+
+  tika:
+    image: docker.io/apache/tika:latest
+    # default CMD (java -jar tika-server.jar) is fine
+
+# ──────────────────────────────────────────────────────────────
+# Run database migrations on each release
+release:
+  image: web
+  command:
+    - python
+    - manage.py
+    - migrate
+
+# ──────────────────────────────────────────────────────────────
+# Environment configuration (Heroku substitutes the ADDON URLs)
 config:
-  PAPERLESS_REDIS: redis://broker:6379
+  PAPERLESS_REDIS: ${REDIS_URL}
   PAPERLESS_DBENGINE: mariadb
-  PAPERLESS_DBHOST: db
-  PAPERLESS_DBUSER: paperless
-  PAPERLESS_DBPASS: paperless
-  PAPERLESS_DBPORT: 3306
-  PAPERLESS_TIKA_ENABLED: 1
+  PAPERLESS_DBHOST: ${JAWSDB_URL_HOST}
+  PAPERLESS_DBPORT: ${JAWSDB_URL_PORT}
+  PAPERLESS_DBUSER: ${JAWSDB_URL_USERNAME}
+  PAPERLESS_DBPASS: ${JAWSDB_URL_PASSWORD}
+  PAPERLESS_TIKA_ENABLED: "1"
   PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
   PAPERLESS_TIKA_ENDPOINT: http://tika:9998
 
+# How many dynos of each type to start by default
 formation:
   web:
     quantity: 1
+    size: hobby
+  worker:
+    quantity: 1
     size: free
   broker:
     quantity: 1
@@ -33,43 +106,3 @@ formation:
   tika:
     quantity: 1
     size: free
-
-addons:
-  - heroku-redis:hobby-dev
-  - jawsdb:kitefin
-
-env:
-  MARIADB_HOST: db
-  MARIADB_DATABASE: paperless
-  MARIADB_USER: paperless
-  MARIADB_PASSWORD: paperless
-  MARIADB_ROOT_PASSWORD: paperless
-
-scripts:
-  postdeploy: ./manage.py migrate
-
-docker:
-  web:
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    ports:
-      - "8000"
-  broker:
-    image: docker.io/library/redis:8
-    ports:
-      - "6379"
-  db:
-    image: docker.io/library/mariadb:11
-    ports:
-      - "3306"
-  gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.20
-    ports:
-      - "3000"
-    command:
-      - "gotenberg"
-      - "--chromium-disable-javascript=true"
-      - "--chromium-allow-list=file:///tmp/.*"
-  tika:
-    image: docker.io/apache/tika:latest
-    ports:
-      - "9998"
