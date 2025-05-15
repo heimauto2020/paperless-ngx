@@ -22,5 +22,4 @@ build:
     PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
 
 run:
-  gotenberg:
-    - "gotenberg --chromium-disable-javascript=true --chromium-allow-list=file:///tmp/.*"
+  gotenberg: "gotenberg --chromium-disable-javascript=true --chromium-allow-list=file:///tmp/.*"
