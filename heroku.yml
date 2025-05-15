@@ -1,12 +1,9 @@
-# heroku.yml  ─────────────────────────────────────
-
 build:
   docker:
-    web: Dockerfile            # Dockerfile im Projekt-Root
+    web: Dockerfile
 
 run:
   web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
-
   worker:
     image: web
     command:
@@ -16,23 +13,20 @@ run:
       - worker
       - -l
       - info
-
   broker:
-    image: docker.io/library/redis:8
+    image: redis:8
     command:
       - redis-server
       - --port
       - "6379"
-
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.20
+    image: gotenberg/gotenberg:8.20
     command:
       - gotenberg
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
-
   tika:
-    image: docker.io/apache/tika:latest
+    image: apache/tika:latest
     command:
       - java
       - -jar
@@ -51,9 +45,8 @@ setup:
   addons:
     - plan: heroku-redis:hobby-dev
       as: REDIS
-
   config:
-    PAPERLESS_REDIS: ${REDIS_URL}              # wird vom Add-on gefüllt
+    PAPERLESS_REDIS: ${REDIS_URL}
     PAPERLESS_DBENGINE: postgresql
     PAPERLESS_DBHOST: ${EXTERNAL_DB_HOST}
     PAPERLESS_DBPORT: ${EXTERNAL_DB_PORT}
