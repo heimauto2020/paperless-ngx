@@ -1,60 +1,24 @@
-# Verwende das Container-Stack
-stack: container
+# ──────────────────────────────────────────────
+# Add-ons, die beim ersten Deploy automatisch
+# provisioniert werden
+addons:
+  - plan: heroku-redis:hobby-dev
+    as: REDIS
 
 # ──────────────────────────────────────────────
-# Automatische Provisionierung bei app:create
-setup:
-  addons:
-    # Kostenlose Redis-Instanz als Broker
-    - plan: heroku-redis:hobby-dev
-      as: REDIS
-
-  # Standard-Config-Variablen für die App
-  config:
-    PAPERLESS_REDIS: ${REDIS_URL}
-    PAPERLESS_DBENGINE: postgresql
-    PAPERLESS_DBHOST: ${EXTERNAL_DB_HOST}
-    PAPERLESS_DBPORT: ${EXTERNAL_DB_PORT}
-    PAPERLESS_DBUSER: ${EXTERNAL_DB_USER}
-    PAPERLESS_DBPASS: ${EXTERNAL_DB_PASSWORD}
-    PAPERLESS_TIKA_ENABLED: "1"
-    PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
-    PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-    PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
-    PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
-
-  # Wie viele Dynos pro Process-Type beim Erstellen gestartet werden
-  formation:
-    web:
-      quantity: 1
-      size: hobby
-    worker:
-      quantity: 1
-      size: free
-    broker:
-      quantity: 1
-      size: free
-    gotenberg:
-      quantity: 1
-      size: free
-    tika:
-      quantity: 1
-      size: free
-
-# ──────────────────────────────────────────────
-# Build-Phase
+# Build-Phase (Container-Stack wird automatisch
+# erkannt, weil wir ein Docker-Image angeben)
 build:
   docker:
-    # Verwendet das Dockerfile im Projekt-Root
-    web: Dockerfile
+    web: Dockerfile        # nutzt das Dockerfile im Projekt-Root
 
 # ──────────────────────────────────────────────
-# Laufende Process-Types (Dynos)
+# Process-Types (Dynos)
 run:
-  # Haupt-Web-Dyno (exponiert ins Internet)
+  # Haupt-Web-Dyno
   web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
 
-  # Celery-Worker (re-use des gleichen Images)
+  # Celery-Worker – verwendet dasselbe Image wie "web"
   worker:
     image: web
     command:
@@ -68,9 +32,12 @@ run:
   # Redis-Broker
   broker:
     image: docker.io/library/redis:8
-    command: redis-server --port 6379
+    command:
+      - redis-server
+      - --port
+      - "6379"
 
-  # Gotenberg-Service (PDF/Chromium)
+  # Gotenberg-Service (Chromium/PDF-Konvertierung)
   gotenberg:
     image: docker.io/gotenberg/gotenberg:8.20
     command:
@@ -90,3 +57,18 @@ release:
     - python
     - manage.py
     - migrate
+
+# ──────────────────────────────────────────────
+# Config-Vars (werden als ENV-Variablen gesetzt)
+config:
+  PAPERLESS_REDIS: ${REDIS_URL}
+  PAPERLESS_DBENGINE: postgresql
+  PAPERLESS_DBHOST: ${EXTERNAL_DB_HOST}
+  PAPERLESS_DBPORT: ${EXTERNAL_DB_PORT}
+  PAPERLESS_DBUSER: ${EXTERNAL_DB_USER}
+  PAPERLESS_DBPASS: ${EXTERNAL_DB_PASSWORD}
+  PAPERLESS_TIKA_ENABLED: "1"
+  PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+  PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+  PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
+  PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
