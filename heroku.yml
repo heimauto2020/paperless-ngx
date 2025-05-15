@@ -20,3 +20,9 @@ build:
     PAPERLESS_TIKA_ENDPOINT: http://tika:9998
     PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
     PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
+
+run:
+  gotenberg:
+    - "gotenberg"
+    - "--chromium-disable-javascript=true"
+    - "--chromium-allow-list=file:///tmp/.*"
