@@ -1,26 +1,40 @@
-# ──────────────────────────────────────────────
-# Add-ons, die beim ersten Deploy automatisch
-# provisioniert werden
-addons:
-  - plan: heroku-redis:hobby-dev
-    as: REDIS
+# heroku.yml
+# =============================================
+# 1) On-create provisioning & ENV-Variablen
+setup:
+  addons:
+    - plan: heroku-redis:hobby-dev   # Redis als Broker
+      as: REDIS
 
-# ──────────────────────────────────────────────
-# Build-Phase (Container-Stack wird automatisch
-# erkannt, weil wir ein Docker-Image angeben)
+  config:
+    PAPERLESS_REDIS: ${REDIS_URL}
+    PAPERLESS_DBENGINE: postgresql
+    PAPERLESS_DBHOST: ${EXTERNAL_DB_HOST}
+    PAPERLESS_DBPORT: ${EXTERNAL_DB_PORT}
+    PAPERLESS_DBUSER: ${EXTERNAL_DB_USER}
+    PAPERLESS_DBPASS: ${EXTERNAL_DB_PASSWORD}
+    PAPERLESS_TIKA_ENABLED: "1"
+    PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+    PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+    PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
+    PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
+
+# =============================================
+# 2) Build-Phase – Container-Stack wird
+#    automatisch erkannt, weil ein Docker-Image
 build:
   docker:
-    web: Dockerfile        # nutzt das Dockerfile im Projekt-Root
+    web: Dockerfile      # nutzt das Dockerfile im Projekt-Root
 
-# ──────────────────────────────────────────────
-# Process-Types (Dynos)
+# =============================================
+# 3) Laufende Dyno-Prozesse
 run:
-  # Haupt-Web-Dyno
+  # Web-Dyno
   web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
 
-  # Celery-Worker – verwendet dasselbe Image wie "web"
+  # Celery-Worker
   worker:
-    image: web
+    image: web           # reuse des Web-Images
     command:
       - celery
       - -A
@@ -37,7 +51,7 @@ run:
       - --port
       - "6379"
 
-  # Gotenberg-Service (Chromium/PDF-Konvertierung)
+  # Gotenberg-Service
   gotenberg:
     image: docker.io/gotenberg/gotenberg:8.20
     command:
@@ -45,30 +59,15 @@ run:
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
 
-  # Apache Tika-Service
+  # Apache-Tika-Service
   tika:
     image: docker.io/apache/tika:latest
 
-# ──────────────────────────────────────────────
-# Release-Phase (DB-Migrationen)
+# =============================================
+# 4) Release-Phase – DB-Migrationen
 release:
   image: web
   command:
     - python
     - manage.py
     - migrate
-
-# ──────────────────────────────────────────────
-# Config-Vars (werden als ENV-Variablen gesetzt)
-config:
-  PAPERLESS_REDIS: ${REDIS_URL}
-  PAPERLESS_DBENGINE: postgresql
-  PAPERLESS_DBHOST: ${EXTERNAL_DB_HOST}
-  PAPERLESS_DBPORT: ${EXTERNAL_DB_PORT}
-  PAPERLESS_DBUSER: ${EXTERNAL_DB_USER}
-  PAPERLESS_DBPASS: ${EXTERNAL_DB_PASSWORD}
-  PAPERLESS_TIKA_ENABLED: "1"
-  PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
-  PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-  PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
-  PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
