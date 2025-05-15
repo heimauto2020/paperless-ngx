@@ -1,9 +1,8 @@
-# heroku.yml
 # =============================================
-# 1) On-create provisioning & ENV-Variablen
+# 1) On-create provisioning & ENV-Variables
 setup:
   addons:
-    - plan: heroku-redis:hobby-dev   # Redis als Broker
+    - plan: heroku-redis:hobby-dev   # Redis as Broker
       as: REDIS
 
   config:
@@ -20,21 +19,21 @@ setup:
     PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
 
 # =============================================
-# 2) Build-Phase – Container-Stack wird
-#    automatisch erkannt, weil ein Docker-Image
+# 2) Build-Phase – Container-Stack will
+#    automatically be detected because of the Docker image
 build:
   docker:
-    web: Dockerfile      # nutzt das Dockerfile im Projekt-Root
+    web: Dockerfile      # uses the Dockerfile in the project root
 
 # =============================================
-# 3) Laufende Dyno-Prozesse
+# 3) Running Dyno-Processes
 run:
-  # Web-Dyno
+  # Web Dyno
   web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
 
   # Celery-Worker
   worker:
-    image: web           # reuse des Web-Images
+    image: web           # reuse the Web image
     command:
       - celery
       - -A
@@ -45,7 +44,7 @@ run:
 
   # Redis-Broker
   broker:
-    image: docker.io/library/redis:8
+    image: docker.io/library/redis:8  # Specify image for Redis
     command:
       - redis-server
       - --port
@@ -53,7 +52,7 @@ run:
 
   # Gotenberg-Service
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.20
+    image: docker.io/gotenberg/gotenberg:8.20  # Specify image for Gotenberg
     command:
       - gotenberg
       - "--chromium-disable-javascript=true"
@@ -61,10 +60,10 @@ run:
 
   # Apache-Tika-Service
   tika:
-    image: docker.io/apache/tika:latest
+    image: docker.io/apache/tika:latest  # Specify image for Tika
 
 # =============================================
-# 4) Release-Phase – DB-Migrationen
+# 4) Release-Phase – DB-Migrations
 release:
   image: web
   command:
