@@ -1,50 +1,13 @@
-build:
-  docker:
-    web: Dockerfile
-
-run:
-  web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
-  worker:
-    image: web
-    command:
-      - celery
-      - -A
-      - paperless
-      - worker
-      - -l
-      - info
-  broker:
-    image: redis:8
-    command:
-      - redis-server
-      - --port
-      - "6379"
-  gotenberg:
-    image: gotenberg/gotenberg:8.20
-    command:
-      - gotenberg
-      - "--chromium-disable-javascript=true"
-      - "--chromium-allow-list=file:///tmp/.*"
-  tika:
-    image: apache/tika:latest
-    command:
-      - java
-      - -jar
-      - /tika-server.jar
-      - -p
-      - "9998"
-
-release:
-  image: web
-  command:
-    - python
-    - manage.py
-    - migrate
-
 setup:
   addons:
     - plan: heroku-redis:hobby-dev
       as: REDIS
+
+build:
+  docker:
+    web: paperless-ngx/Dockerfile
+    gotenberg: gotenberg/build/Dockerfile
+    tika: tika/full/Dockerfile
   config:
     PAPERLESS_REDIS: ${REDIS_URL}
     PAPERLESS_DBENGINE: postgresql
