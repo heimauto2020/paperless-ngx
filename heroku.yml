@@ -21,5 +21,6 @@ build:
     PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
     PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
     GOLANG_VERSION: "1.24.3"
+    PDFCPU_VERSION: "v0.10.2"
 run:
   gotenberg: "gotenberg --chromium-disable-javascript=true --chromium-allow-list=file:///tmp/.*"
