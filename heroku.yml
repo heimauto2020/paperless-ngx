@@ -62,8 +62,8 @@ config:
   PAPERLESS_TIKA_ENABLED: "1"
   PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
   PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-  PAPERLESS_CONSUME_DIR: /mnt/kdrive/${USERNAME}/consume
-  PAPERLESS_EXPORT_DIR: /mnt/kdrive/${USERNAME}/export
+  PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
+  PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
 
 # How many dynos of each type to start by default
 formation:
