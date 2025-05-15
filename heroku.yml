@@ -1,12 +1,59 @@
-# =============================================
-# 1) On-create provisioning & ENV-Variables
+# heroku.yml  ─────────────────────────────────────
+
+build:
+  docker:
+    web: Dockerfile            # Dockerfile im Projekt-Root
+
+run:
+  web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
+
+  worker:
+    image: web
+    command:
+      - celery
+      - -A
+      - paperless
+      - worker
+      - -l
+      - info
+
+  broker:
+    image: docker.io/library/redis:8
+    command:
+      - redis-server
+      - --port
+      - "6379"
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.20
+    command:
+      - gotenberg
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+
+  tika:
+    image: docker.io/apache/tika:latest
+    command:
+      - java
+      - -jar
+      - /tika-server.jar
+      - -p
+      - "9998"
+
+release:
+  image: web
+  command:
+    - python
+    - manage.py
+    - migrate
+
 setup:
   addons:
-    - plan: heroku-redis:hobby-dev   # Redis as Broker
+    - plan: heroku-redis:hobby-dev
       as: REDIS
 
   config:
-    PAPERLESS_REDIS: ${REDIS_URL}
+    PAPERLESS_REDIS: ${REDIS_URL}              # wird vom Add-on gefüllt
     PAPERLESS_DBENGINE: postgresql
     PAPERLESS_DBHOST: ${EXTERNAL_DB_HOST}
     PAPERLESS_DBPORT: ${EXTERNAL_DB_PORT}
@@ -17,56 +64,3 @@ setup:
     PAPERLESS_TIKA_ENDPOINT: http://tika:9998
     PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
     PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
-
-# =============================================
-# 2) Build-Phase – Container-Stack will
-#    automatically be detected because of the Docker image
-build:
-  docker:
-    web: Dockerfile      # uses the Dockerfile in the project root
-
-# =============================================
-# 3) Running Dyno-Processes
-run:
-  # Web Dyno
-  web: /usr/local/bin/gunicorn paperless.asgi:application --bind 0.0.0.0:$PORT
-
-  # Celery-Worker
-  worker:
-    image: web           # reuse the Web image
-    command:
-      - celery
-      - -A
-      - paperless
-      - worker
-      - -l
-      - info
-
-  # Redis-Broker
-  broker:
-    image: docker.io/library/redis:8  # Specify image for Redis
-    command:
-      - redis-server
-      - --port
-      - "6379"
-
-  # Gotenberg-Service
-  gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.20  # Specify image for Gotenberg
-    command:
-      - gotenberg
-      - "--chromium-disable-javascript=true"
-      - "--chromium-allow-list=file:///tmp/.*"
-
-  # Apache-Tika-Service
-  tika:
-    image: docker.io/apache/tika:latest  # Specify image for Tika
-
-# =============================================
-# 4) Release-Phase – DB-Migrations
-release:
-  image: web
-  command:
-    - python
-    - manage.py
-    - migrate
