@@ -48,8 +48,8 @@ ENV \
     PATH=/command:$PATH
 
 # Buildx provided, must be defined to use though
-ARG TARGETARCH
-ARG TARGETVARIANT
+ARG TARGETARCH=amd64
+ARG TARGETVARIANT=
 # Lock this version
 ARG S6_OVERLAY_VERSION=3.2.0.2
 
