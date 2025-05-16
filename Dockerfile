@@ -102,7 +102,7 @@ LABEL org.opencontainers.image.licenses="GPL-3.0-only"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Buildx provided, must be defined to use though
-ARG TARGETARCH
+ARG TARGETARCH=amd64
 
 # Can be workflow provided, defaults set for manual building
 ARG JBIG2ENC_VERSION=0.30
