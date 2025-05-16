@@ -18,4 +18,4 @@ build:
     PAPERLESS_TIKA_ENDPOINT: http://tika:9998
     PAPERLESS_CONSUME_DIR: /mnt/gdrive/${USERNAME}/consume
     PAPERLESS_EXPORT_DIR: /mnt/gdrive/${USERNAME}/export
-    BUILDPLATFORM: linux/amd64
+    BUILDPLATFORM: amd64
